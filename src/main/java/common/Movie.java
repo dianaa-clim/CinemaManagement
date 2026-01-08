@@ -35,6 +35,17 @@ public class Movie implements Serializable {
         this.price = price;
     }
 
+
+    /// pt teste
+    public Movie(String movieName, String genre,
+                 int duration) {
+        this.movieName = movieName;
+        this.genre = genre;
+        this.duration = duration;
+    }
+
+
+
     public int getIdMovie() {
         return idMovie;
     }

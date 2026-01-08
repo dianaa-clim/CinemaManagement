@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('admin')}"></div>
+
+<main class="container py-4 py-md-5">
+
+  <div class="card p-3 p-md-4 mb-3">
+    <h1 class="h4 mb-1">Admin panel</h1>
+    <div style="color: var(--muted);">
+      Statistici + gestionare conturi angajați.
+    </div>
+
+    <div class="row g-3 mt-2">
+      <div class="col-md-4">
+        <div class="card p-3">
+          <div class="fw-semibold">Movies</div>
+          <div style="color: var(--muted);" th:text="${moviesCount}">0</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-3">
+          <div class="fw-semibold">Shows</div>
+          <div style="color: var(--muted);" th:text="${showsCount}">0</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-3">
+          <div class="fw-semibold">Reservations</div>
+          <div style="color: var(--muted);" th:text="${reservationsCount}">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- create employee -->
+  <div class="card p-3 p-md-4 mb-3">
+    <h2 class="h5 mb-3">Angajează (creează cont EMPLOYEE)</h2>
+
+    <form method="post" th:action="@{/admin/employees/create}" class="row g-2">
+      <div class="col-md-4">
+        <input class="form-control" name="username" placeholder="username" required>
+      </div>
+      <div class="col-md-4">
+        <input class="form-control" type="password" name="password" placeholder="password" required>
+      </div>
+      <div class="col-md-4 d-grid">
+        <button class="btn btn-primary">Create employee</button>
+      </div>
+    </form>
+
+    <div class="mt-3 text-danger" th:if="${param.exists}">Username există deja.</div>
+    <div class="mt-3 text-success" th:if="${param.created}">Employee creat cu succes.</div>
+    <div class="mt-3 text-danger" th:if="${param.selfdelete}">Nu poți șterge contul cu care ești logat.</div>
+    <div class="mt-3 text-success" th:if="${param.deleted}">Cont șters.</div>
+  </div>
+
+  <!-- users list -->
+  <div class="card p-3 p-md-4">
+    <h2 class="h5 mb-3">Utilizatori</h2>
+
+    <div class="d-flex flex-column gap-2">
+      <div class="d-flex justify-content-between align-items-center"
+           th:each="u : ${users}">
+
+        <div>
+          <div class="fw-semibold" th:text="${u.username}">user</div>
+          <div style="color: var(--muted); font-size:.95rem;"
+               th:text="${u.roles}">[USER]</div>
+        </div>
+
+        <form method="post" th:action="@{/admin/users/{username}/delete(username=${u.username})}">
+          <button class="btn btn-outline-danger btn-sm">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+</body>
+</html>

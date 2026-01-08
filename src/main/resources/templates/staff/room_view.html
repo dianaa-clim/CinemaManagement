@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('staff')}"></div>
+
+<main class="container py-4 py-md-5">
+
+    <div class="card p-3 p-md-4 mb-3">
+        <h1 class="h4 mb-1" th:text="${movie.title}">Movie</h1>
+        <div style="color: var(--muted);">
+            <span th:text="${show.date}"></span> •
+            <span th:text="${show.time}"></span> •
+            Sala <span th:text="${show.roomNumber}"></span>
+        </div>
+    </div>
+
+    <div class="card p-3 p-md-4">
+        <div class="mb-3 fw-semibold">Click pe un loc pentru ocupare / eliberare</div>
+
+        <div class="d-flex flex-column gap-2">
+            <div class="d-flex align-items-center gap-2"
+                 th:each="r : ${rows}">
+
+                <div class="fw-semibold" style="width:24px;" th:text="${r}">A</div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <form th:each="c : ${cols}"
+                          method="post"
+                          th:action="@{/staff/rooms/{id}/toggle(id=${show.id})}">
+
+                        <input type="hidden" name="seat"
+                               th:value="${r + c}"/>
+
+                        <button class="btn"
+                                th:classappend="${occupiedSeats.contains(r + c)}
+                      ? ' btn-danger'
+                      : ' btn-outline-light'"
+                                th:text="${c}">
+                            1
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

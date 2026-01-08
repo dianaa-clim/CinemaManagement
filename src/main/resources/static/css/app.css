@@ -1,0 +1,94 @@
+:root{
+    --bg: #0b0f19;
+    --surface: #111827;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --accent: #e11d48;
+}
+
+body{
+    background:
+            radial-gradient(1000px 600px at 15% -10%, rgba(225,29,72,0.22), transparent 60%),
+            radial-gradient(900px 600px at 90% 0%, rgba(59,130,246,0.16), transparent 55%),
+            var(--bg);
+    color: var(--text);
+}
+
+.navbar{
+    background: rgba(0,0,0,0.55) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.hero{
+    background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 18px;
+}
+
+.card{
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+}
+
+.card .card-title{ color: var(--text); }
+.card .card-text{ color: var(--muted); }
+
+.badge-soft{
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.10);
+}
+
+.btn-primary{
+    background: var(--accent);
+    border-color: var(--accent);
+}
+.btn-primary:hover{ filter: brightness(1.08); }
+
+.footer{
+    border-top: 1px solid rgba(255,255,255,0.08);
+    color: var(--muted);
+}
+
+.seat-occupied {
+    opacity: 0.45;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+.seat-locked {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+
+/* occupied = roșu / închis, foarte evident */
+.seat-occupied {
+    background: rgba(255, 0, 0, 0.18) !important;
+    border-color: rgba(255, 0, 0, 0.55) !important;
+    color: rgba(255,255,255,0.9) !important;
+    opacity: 1 !important;
+    text-decoration: line-through;
+}
+
+/* locked = mai “soft”, dar diferit */
+.seat-locked {
+    opacity: 0.65 !important;
+}
+
+/* evidențiere clară pentru seat selectat */
+.btn-check:checked + span {
+    background: rgba(255,255,255,0.18);
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-weight: 700;
+}
+
+/* ca să se vadă și conturul pe label când e checked */
+label.btn:has(.btn-check:checked) {
+    border-color: rgba(255,255,255,0.55) !important;
+    background: rgba(255,255,255,0.10) !important;
+}
+
+
