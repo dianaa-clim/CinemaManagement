@@ -24,6 +24,13 @@ public class Review implements Serializable {
         this.rating = rating;
         this.date = date;
     }
+    public int getIdReview() {
+        return idReview;
+    }
+    public void setIdReview(int idReview) {
+        this.idReview = idReview;
+    }
+
     public int getIdClient() {
         return idClient;
     }

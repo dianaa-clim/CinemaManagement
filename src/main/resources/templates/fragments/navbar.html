@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="ro"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:th="http://www.thymeleaf.org">
 <body>
 
 <nav th:fragment="navbar(active)" class="navbar navbar-expand-lg navbar-dark">
@@ -10,7 +9,9 @@
         <!-- Brand -->
         <a class="navbar-brand fw-semibold" th:href="@{/}">Cinema</a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#nav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -20,15 +21,21 @@
                 <!-- Main links -->
                 <a class="nav-link"
                    th:classappend="${active}=='home' ? ' active' : ''"
-                   th:href="@{/}">Home</a>
+                   th:href="@{/}">
+                    Home
+                </a>
 
                 <a class="nav-link"
                    th:classappend="${active}=='movies' ? ' active' : ''"
-                   th:href="@{/movies}">Movies</a>
+                   th:href="@{/movies}">
+                    Movies
+                </a>
 
                 <a class="nav-link"
                    th:classappend="${active}=='food' ? ' active' : ''"
-                   th:href="@{/food}">Food</a>
+                   th:href="@{/food}">
+                    Food
+                </a>
 
                 <!-- Search -->
                 <form class="d-flex ms-lg-3 my-2 my-lg-0"
@@ -39,54 +46,43 @@
                            name="q"
                            placeholder="Caută film..."
                            th:value="${q}">
-                    <button class="btn btn-sm btn-outline-light" type="submit">Caută</button>
+                    <button class="btn btn-sm btn-outline-light" type="submit">
+                        Caută
+                    </button>
                 </form>
 
-                <!-- ========== AUTH ZONE ========== -->
+                <!-- ========== AUTH ZONE (SESSION-BASED) ========== -->
 
                 <!-- NOT LOGGED IN -->
                 <a class="nav-link"
-                   sec:authorize="!isAuthenticated()"
+                   th:if="${session.user == null}"
                    th:classappend="${active}=='login' ? ' active' : ''"
                    th:href="@{/login}">
                     Login
                 </a>
 
-                <!-- USER -->
+                <!-- LOGGED IN: USER -->
                 <a class="nav-link"
-                   sec:authorize="hasRole('USER')"
+                   th:if="${session.user != null}"
                    th:classappend="${active}=='account' ? ' active' : ''"
                    th:href="@{/account}">
                     Contul meu
                 </a>
 
-                <!-- EMPLOYEE -->
+                <!-- LOGGED IN: ADMIN -->
                 <a class="nav-link"
-                   sec:authorize="hasRole('EMPLOYEE')"
-                   th:classappend="${active}=='staff' ? ' active' : ''"
-                   th:href="@{/staff}">
-                    Staff
-                </a>
-
-                <!-- ADMIN -->
-                <a class="nav-link"
-                   sec:authorize="hasRole('ADMIN')"
+                   th:if="${session.user != null and session.user.role == 'Admin'}"
                    th:classappend="${active}=='admin' ? ' active' : ''"
                    th:href="@{/admin}">
                     Admin
                 </a>
 
-                <!-- LOGOUT (POST) -->
-                <form sec:authorize="isAuthenticated()"
-                      th:action="@{/logout}"
-                      method="post"
-                      class="d-flex ms-lg-2">
-                    <button class="btn btn-sm btn-outline-light" type="submit">
-                        Deconectare
-                    </button>
-                </form>
-
-
+                <!-- LOGOUT -->
+                <a class="nav-link"
+                   th:if="${session.user != null}"
+                   th:href="@{/logout}">
+                    Logout
+                </a>
 
             </div>
         </div>

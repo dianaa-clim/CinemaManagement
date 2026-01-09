@@ -1,12 +1,14 @@
 package common;
 
-import java.io.Serializable;
+public class Administrator extends Account {
 
-public class Administrator extends Account implements Serializable{
-    public Administrator(String role, String name, String mail, String phoneNumber, String password) {
-        super("Administrator", name, mail, phoneNumber, password);
+    public Administrator(String name, String username,
+                         String phoneNumber, String password) {
+        super(0, "Administrator", name, username, phoneNumber, password);
     }
-    public Administrator(int id, String role, String name, String mail, String phoneNumber, String password) {
-        super(id, "Administrator", name, mail, phoneNumber, password);
+
+    public Administrator(int id, String name, String username,
+                         String phoneNumber, String password) {
+        super(id, "Administrator", name, username, phoneNumber, password);
     }
 }

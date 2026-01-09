@@ -3,83 +3,104 @@ package common;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Rezervation implements Serializable {
-    private int idRezervation;
+public class Reservation implements Serializable {
+
+    private int idReservation;
     private int idClient;
     private int idFilm;
     private int idCinemaRoom;
     private int idSeat;
-    private LocalDate dateRezervation;
-    private float priceRezervation;
+    private LocalDate dateReservation;
+    private float priceReservation;
     private int idMovieSchedule;
 
-    public Rezervation(int idClient, int idFilm, int idCinemaRoom,
-                       int idSeat, LocalDate dateRezervation, float priceRezervation, int idMovieSchedule) {
+    public Reservation(int idClient, int idFilm, int idCinemaRoom,
+                       int idSeat, LocalDate dateReservation,
+                       float priceReservation, int idMovieSchedule) {
+
         this.idClient = idClient;
         this.idFilm = idFilm;
         this.idCinemaRoom = idCinemaRoom;
         this.idSeat = idSeat;
-        this.dateRezervation = dateRezervation;
-        this.priceRezervation = priceRezervation;
-        this.idMovieSchedule = idMovieSchedule;
-    }
-    public Rezervation(int idRezervation, int idClient, int idFilm, int idCinemaRoom,
-                       int idSeat, LocalDate dateRezervation, float priceRezervation, int idMovieSchedule) {
-        this.idRezervation = idRezervation;
-        this.idClient = idClient;
-        this.idFilm = idFilm;
-        this.idCinemaRoom = idCinemaRoom;
-        this.idSeat = idSeat;
-        this.dateRezervation = dateRezervation;
-        this.priceRezervation = priceRezervation;
+        this.dateReservation = dateReservation;
+        this.priceReservation = priceReservation;
         this.idMovieSchedule = idMovieSchedule;
     }
 
-    public int getIdRezervation() {
-        return idRezervation;
+    public Reservation(int idReservation, int idClient, int idFilm, int idCinemaRoom,
+                       int idSeat, LocalDate dateReservation,
+                       float priceReservation, int idMovieSchedule) {
+
+        this.idReservation = idReservation;
+        this.idClient = idClient;
+        this.idFilm = idFilm;
+        this.idCinemaRoom = idCinemaRoom;
+        this.idSeat = idSeat;
+        this.dateReservation = dateReservation;
+        this.priceReservation = priceReservation;
+        this.idMovieSchedule = idMovieSchedule;
     }
-    public void setIdRezervation(int idRezervation) {
-        this.idRezervation = idRezervation;
+
+    public int getIdReservation() {
+        return idReservation;
     }
+
+    public void setIdReservation(int idReservation) {
+        this.idReservation = idReservation;
+    }
+
     public int getIdClient() {
         return idClient;
     }
+
     public void setIdClient(int idClient) {
         this.idClient = idClient;
     }
+
     public int getIdFilm() {
         return idFilm;
     }
+
     public void setIdFilm(int idFilm) {
         this.idFilm = idFilm;
     }
+
     public int getIdCinemaRoom() {
         return idCinemaRoom;
     }
+
     public void setIdCinemaRoom(int idCinemaRoom) {
         this.idCinemaRoom = idCinemaRoom;
     }
+
     public int getIdSeat() {
         return idSeat;
     }
+
     public void setIdSeat(int idSeat) {
         this.idSeat = idSeat;
     }
-    public LocalDate getDateRezervation() {
-        return dateRezervation;
+
+    public LocalDate getDateReservation() {
+        return dateReservation;
     }
-    public void setDateRezervation(LocalDate dateRezervation) {
-        this.dateRezervation = dateRezervation;
+
+    public void setDateReservation(LocalDate dateReservation) {
+        this.dateReservation = dateReservation;
     }
-    public float getPriceRezervation() {
-        return priceRezervation;
+
+    public float getPriceReservation() {
+        return priceReservation;
     }
-    public void setPriceRezervation(float priceRezervation) {
-        this.priceRezervation = priceRezervation;
+
+    public void setPriceReservation(float priceReservation) {
+        this.priceReservation = priceReservation;
     }
+
     public int getIdMovieSchedule() {
         return idMovieSchedule;
     }
+
     public void setIdMovieSchedule(int idMovieSchedule) {
         this.idMovieSchedule = idMovieSchedule;
     }

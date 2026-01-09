@@ -1,12 +1,14 @@
 package common;
 
-import java.io.Serializable;
+public class Customer extends Account {
 
-public class Customer extends Account implements Serializable {
-    public Customer(String role, String name, String mail, String phoneNumber, String password) {
-        super("Customer", name, mail, phoneNumber, password);
+    public Customer(String name, String username,
+                    String phoneNumber, String password) {
+        super(0, "Customer", name, username, phoneNumber, password);
     }
-    public Customer(int id, String role, String name, String mail, String phoneNumber, String password) {
-        super(id, "Customer", name, mail, phoneNumber, password);
+
+    public Customer(int id, String name, String username,
+                    String phoneNumber, String password) {
+        super(id, "Customer", name, username, phoneNumber, password);
     }
 }

@@ -1,37 +1,40 @@
 package org.example.web.Controller;
 
-import org.example.web.store.ReservationStore;
-import org.springframework.security.core.Authentication;
+import common.Account;
+import jakarta.servlet.http.HttpSession;
+import org.example.server.service.ReservationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class AccountController {
 
-    private final ReservationStore reservationStore;
+    private final ReservationService reservationService;
 
-    public AccountController(ReservationStore reservationStore) {
-        this.reservationStore = reservationStore;
+    public AccountController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @GetMapping("/account")
-    public String account(Authentication auth, Model model) {
-        String username = auth.getName();
+    public String account(HttpSession session, Model model) {
 
-        model.addAttribute("username", username);
-        model.addAttribute("activeReservations",
-                reservationStore.activeForUser(username));
-        model.addAttribute("canceledReservations",
-                reservationStore.canceledForUser(username));
+        Account user = (Account) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", user);
+        model.addAttribute(
+                "activeReservations",
+                reservationService.getActiveReservationsForUser(user.getIdAccount())
+        );
+        model.addAttribute(
+                "canceledReservations",
+                reservationService.getCanceledReservationsForUser(user.getIdAccount())
+        );
 
         return "account";
     }
-
-    @PostMapping("/account/reservations/{id}/cancel")
-    public String cancel(@PathVariable String id, Authentication auth) {
-        reservationStore.cancel(id, auth.getName());
-        return "redirect:/account";
-    }
 }
-

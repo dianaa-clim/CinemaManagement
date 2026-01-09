@@ -1,14 +1,16 @@
 package org.example.web.Controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.web.store.CinemaStore;
 import org.example.web.store.ReservationStore;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class BookingController {
@@ -19,37 +21,46 @@ public class BookingController {
         this.reservationStore = reservationStore;
     }
 
-    @GetMapping("/booking")
-    public String booking(@RequestParam(name = "showId", required = false) String showId,
-                          Model model,
-                          Principal principal) {
+    /* ===================== SELECT SEATS ===================== */
 
-        // Dacă cineva ajunge pe /booking fără showId (refresh / link vechi), nu mai dăm 400
-        if (showId == null || showId.isBlank()) {
-            return "redirect:/movies";
+    @GetMapping("/booking")
+    public String booking(@RequestParam("showId") String showId,
+                          HttpSession session,
+                          Model model) {
+
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        if (accountId == null) {
+            return "redirect:/login";
         }
 
         var show = CinemaStore.getShow(showId);
         var movie = CinemaStore.getMovie(show.movieId());
-        var occupied = CinemaStore.getOccupiedSeats(showId);
 
-        model.addAttribute("showId", showId);
-        model.addAttribute("show", show);
+        // OCCUPIED_BY_SHOW_ID este Map<String, Set<String>>
+        List<String> occupiedSeats = new ArrayList<>(
+                CinemaStore.OCCUPIED_BY_SHOW_ID
+                        .getOrDefault(showId, Set.of())
+        );
+
         model.addAttribute("movie", movie);
-        model.addAttribute("occupiedSeats", occupied);
-
-        // layout dummy (în DB va veni din Room)
-        model.addAttribute("rows", List.of("A","B","C","D","E"));
-        model.addAttribute("cols", List.of(1,2,3,4,5,6,7,8,9,10));
+        model.addAttribute("show", show);
+        model.addAttribute("occupiedSeats", occupiedSeats);
 
         return "booking";
     }
 
+    /* ===================== CONFIRM BOOKING ===================== */
+
     @PostMapping("/booking/confirm")
     public String confirm(@RequestParam("showId") String showId,
                           @RequestParam(required = false) List<String> seats,
-                          Authentication auth,
+                          HttpSession session,
                           Model model) {
+
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        if (accountId == null) {
+            return "redirect:/login";
+        }
 
         if (seats == null || seats.isEmpty()) {
             return "redirect:/booking?showId=" + showId;
@@ -58,19 +69,19 @@ public class BookingController {
         var show = CinemaStore.getShow(showId);
         var movie = CinemaStore.getMovie(show.movieId());
 
-        // creează rezervare
-        var reservation = reservationStore.create(auth.getName(), showId, seats);
+        // creează rezervarea
+        var reservation = reservationStore.create(accountId, showId, seats);
 
-        // marchează locurile ca ocupate (ca să se vadă imediat)
+        // marchează locurile ca ocupate (CORECT: Set<String>)
         CinemaStore.OCCUPIED_BY_SHOW_ID
-                .computeIfAbsent(showId, k -> new java.util.HashSet<>())
+                .computeIfAbsent(showId, k -> new HashSet<>())
                 .addAll(seats);
 
-        model.addAttribute("reservation", reservation);
-        model.addAttribute("show", show);
         model.addAttribute("movie", movie);
+        model.addAttribute("show", show);
+        model.addAttribute("seats", seats);
+        model.addAttribute("reservation", reservation);
 
-        return "booking_success";
+        return "booking-confirm";
     }
-
 }

@@ -73,7 +73,7 @@
         <div>
           <div class="fw-semibold" th:text="${u.username}">user</div>
           <div style="color: var(--muted); font-size:.95rem;"
-               th:text="${u.roles}">[USER]</div>
+               th:text="${u.role}">[USER]</div>
         </div>
 
         <form method="post" th:action="@{/admin/users/{username}/delete(username=${u.username})}">

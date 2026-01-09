@@ -10,5 +10,6 @@ public class FoodController {
     public String food() {
         return "food";
     }
+
 }
 

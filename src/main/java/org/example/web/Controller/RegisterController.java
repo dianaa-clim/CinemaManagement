@@ -1,19 +1,17 @@
 package org.example.web.Controller;
 
-import org.example.web.store.UserStore;
+import org.example.server.service.AccountService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
-
 @Controller
 public class RegisterController {
 
-    private final UserStore userStore;
+    private final AccountService accountService;
 
-    public RegisterController(UserStore userStore) {
-        this.userStore = userStore;
+    public RegisterController(AccountService accountService) {
+        this.accountService = accountService;
     }
 
     @GetMapping("/register")
@@ -37,13 +35,7 @@ public class RegisterController {
             return "register";
         }
 
-        if (userStore.exists(username)) {
-            model.addAttribute("error", "Username-ul există deja.");
-            return "register";
-        }
-
-        userStore.create(username, password, Set.of(UserStore.Role.USER));
-
-        return "redirect:/login?registered";
+        accountService.register(username, password);
+        return "redirect:/login";
     }
 }

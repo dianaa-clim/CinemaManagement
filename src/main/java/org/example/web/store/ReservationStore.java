@@ -12,7 +12,7 @@ public class ReservationStore {
 
     public record Reservation(
             String id,
-            String username,
+            int accountId,          // 🔴 NU username
             String showId,
             List<String> seats,
             Status status,
@@ -21,54 +21,71 @@ public class ReservationStore {
 
     private final Map<String, Reservation> byId = new LinkedHashMap<>();
 
-    public Reservation create(String username, String showId, List<String> seats) {
-        String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    /* ===================== CREATE ===================== */
+
+    public Reservation create(int accountId, String showId, List<String> seats) {
+        String id = UUID.randomUUID()
+                .toString()
+                .substring(0, 8)
+                .toUpperCase();
+
         Reservation r = new Reservation(
-                id, username, showId,
+                id,
+                accountId,
+                showId,
                 List.copyOf(seats),
                 Status.CONFIRMED,
                 LocalDateTime.now()
         );
+
         byId.put(id, r);
         return r;
     }
 
-    public List<Reservation> forUser(String username) {
+    /* ===================== READ ===================== */
+
+    public List<Reservation> forAccount(int accountId) {
         return byId.values().stream()
-                .filter(r -> r.username().equals(username))
+                .filter(r -> r.accountId() == accountId)
                 .sorted(Comparator.comparing(Reservation::createdAt).reversed())
                 .toList();
     }
 
-    public boolean cancel(String id, String username) {
-        Reservation r = byId.get(id);
-        if (r == null) return false;
-        if (!r.username().equals(username)) return false;
-        if (r.status() == Status.CANCELED) return true;
-
-        byId.put(id, new Reservation(
-                r.id(), r.username(), r.showId(), r.seats(),
-                Status.CANCELED, r.createdAt()
-        ));
-        return true;
-    }
-
-    public List<Reservation> activeForUser(String username) {
-        return forUser(username).stream()
+    public List<Reservation> activeForAccount(int accountId) {
+        return forAccount(accountId).stream()
                 .filter(r -> r.status() == Status.CONFIRMED)
                 .toList();
     }
 
-    public List<Reservation> canceledForUser(String username) {
-        return forUser(username).stream()
+    public List<Reservation> canceledForAccount(int accountId) {
+        return forAccount(accountId).stream()
                 .filter(r -> r.status() == Status.CANCELED)
                 .toList();
     }
 
-    public int countAll() {
-        return byId.size(); // sau colecția ta internă
+    /* ===================== UPDATE ===================== */
+
+    public boolean cancel(String id, int accountId) {
+        Reservation r = byId.get(id);
+        if (r == null) return false;
+        if (r.accountId() != accountId) return false;
+        if (r.status() == Status.CANCELED) return true;
+
+        byId.put(id, new Reservation(
+                r.id(),
+                r.accountId(),
+                r.showId(),
+                r.seats(),
+                Status.CANCELED,
+                r.createdAt()
+        ));
+
+        return true;
     }
 
+    /* ===================== STATS ===================== */
 
+    public int countAll() {
+        return byId.size();
+    }
 }
-
