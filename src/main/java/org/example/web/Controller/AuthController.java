@@ -1,14 +1,11 @@
 package org.example.web.Controller;
 
 import common.Account;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.example.server.service.AccountService;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
 
 @Controller
 public class AuthController {
@@ -35,24 +32,26 @@ public class AuthController {
             return "redirect:/login?error";
         }
 
-        // 🔥 invalidează sesiunea veche
+        // 🔥 invalidate old session
         HttpSession oldSession = request.getSession(false);
         if (oldSession != null) {
             oldSession.invalidate();
         }
 
-        // 🔥 creează sesiune NOUĂ
-        HttpSession newSession = request.getSession(true);
-        newSession.setAttribute("user", user);
+        // 🔥 create new session
+        HttpSession session = request.getSession(true);
+        session.setAttribute("user", user);
 
         System.out.println("LOGIN USER = " + user.getUsername());
         System.out.println("LOGIN ROLE = " + user.getRole());
 
-        if ("Admin".equalsIgnoreCase(user.getRole())) {
+        String role = user.getRole();
+
+        if ("ADMIN".equalsIgnoreCase(role)) {
             return "redirect:/admin";
         }
 
-        if ("Employee".equalsIgnoreCase(user.getRole())) {
+        if ("EMPLOYEE".equalsIgnoreCase(role)) {
             return "redirect:/staff";
         }
 
@@ -61,9 +60,7 @@ public class AuthController {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate(); // 🔥 șterge complet sesiunea
+        session.invalidate();
         return "redirect:/login?logout";
     }
-
-
 }

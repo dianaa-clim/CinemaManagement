@@ -1,57 +1,51 @@
 package org.example.web.Controller;
 
-import org.example.web.store.CinemaStore;
+import common.Show;
+import org.example.server.service.MovieService;
+import org.example.server.service.ShowService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/staff/shows")
 public class StaffShowsController {
 
+    private final ShowService showService;
+    private final MovieService movieService;
+
+    public StaffShowsController(ShowService showService,
+                                MovieService movieService) {
+        this.showService = showService;
+        this.movieService = movieService;
+    }
+
+    // ===================== LIST SHOWS =====================
     @GetMapping
     public String shows(Model model) {
-        model.addAttribute("shows", CinemaStore.SHOWS);
-        model.addAttribute("moviesById", CinemaStore.MOVIES);
+        model.addAttribute("shows", showService.findAll());
         return "staff/shows";
     }
 
+    // ===================== ADD SHOW FORM =====================
     @GetMapping("/new")
     public String newShowForm(Model model) {
-        model.addAttribute("movies", CinemaStore.allMovies());
+        model.addAttribute("show", new Show());
+        model.addAttribute("movies", movieService.findAll());
         return "staff/show_new";
     }
 
+    // ===================== SAVE SHOW =====================
     @PostMapping("/new")
-    public String createShow(@RequestParam String movieId,
-                             @RequestParam LocalDate date,
-                             @RequestParam String time,
-                             @RequestParam int roomNumber,
-                             @RequestParam String format,
-                             @RequestParam String language) {
-
-        String showId = UUID.randomUUID().toString().substring(0, 8);
-
-        CinemaStore.addShow(
-                showId,
-                movieId,
-                date,
-                time,
-                roomNumber,
-                format,
-                language
-        );
-
+    public String saveShow(@ModelAttribute Show show) {
+        showService.addShow(show);
         return "redirect:/staff/shows";
     }
 
+    // ===================== DELETE SHOW =====================
     @PostMapping("/{id}/delete")
-    public String deleteShow(@PathVariable String id) {
-        CinemaStore.SHOWS.removeIf(s -> s.id().equals(id));
-        CinemaStore.OCCUPIED_BY_SHOW_ID.remove(id);
+    public String deleteShow(@PathVariable int id) {
+        showService.deleteShow(id);
         return "redirect:/staff/shows";
     }
 }

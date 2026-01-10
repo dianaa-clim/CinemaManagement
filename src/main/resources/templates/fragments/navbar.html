@@ -1,90 +1,75 @@
 <!doctype html>
-<html lang="ro"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
 <body>
 
 <nav th:fragment="navbar(active)" class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
 
-        <!-- Brand -->
-        <a class="navbar-brand fw-semibold" th:href="@{/}">Cinema</a>
+        <a class="navbar-brand" th:href="@{/}">Cinema</a>
 
-        <button class="navbar-toggler" type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#nav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="navbar-nav ms-auto gap-2 align-items-center">
 
-        <div class="collapse navbar-collapse" id="nav">
-            <div class="navbar-nav ms-auto gap-1 align-items-lg-center">
+            <a class="nav-link"
+               th:classappend="${active == 'home'} ? 'active' : ''"
+               th:href="@{/}">
+                Home
+            </a>
 
-                <!-- Main links -->
-                <a class="nav-link"
-                   th:classappend="${active}=='home' ? ' active' : ''"
-                   th:href="@{/}">
-                    Home
+            <a class="nav-link"
+               th:classappend="${active == 'movies'} ? 'active' : ''"
+               th:href="@{/movies}">
+                Movies
+            </a>
+
+            <a class="nav-link"
+               th:classappend="${active == 'food'} ? 'active' : ''"
+               th:href="@{/food}">
+                Food
+            </a>
+
+            <a class="nav-link"
+               th:if="${session.user != null}"
+               th:href="@{/account}">
+                Contul meu
+            </a>
+
+            <!-- STAFF -->
+            <div class="nav-item dropdown"
+                 th:if="${session.user != null and session.user.role == 'Employee'}">
+
+                <a class="nav-link dropdown-toggle"
+                   href="#" data-bs-toggle="dropdown">
+                    Staff
                 </a>
 
-                <a class="nav-link"
-                   th:classappend="${active}=='movies' ? ' active' : ''"
-                   th:href="@{/movies}">
-                    Movies
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${active}=='food' ? ' active' : ''"
-                   th:href="@{/food}">
-                    Food
-                </a>
-
-                <!-- Search -->
-                <form class="d-flex ms-lg-3 my-2 my-lg-0"
-                      method="get"
-                      th:action="@{/movies}">
-                    <input class="form-control form-control-sm me-2"
-                           type="search"
-                           name="q"
-                           placeholder="Caută film..."
-                           th:value="${q}">
-                    <button class="btn btn-sm btn-outline-light" type="submit">
-                        Caută
-                    </button>
-                </form>
-
-                <!-- ========== AUTH ZONE (SESSION-BASED) ========== -->
-
-                <!-- NOT LOGGED IN -->
-                <a class="nav-link"
-                   th:if="${session.user == null}"
-                   th:classappend="${active}=='login' ? ' active' : ''"
-                   th:href="@{/login}">
-                    Login
-                </a>
-
-                <!-- LOGGED IN: USER -->
-                <a class="nav-link"
-                   th:if="${session.user != null}"
-                   th:classappend="${active}=='account' ? ' active' : ''"
-                   th:href="@{/account}">
-                    Contul meu
-                </a>
-
-                <!-- LOGGED IN: ADMIN -->
-                <a class="nav-link"
-                   th:if="${session.user != null and session.user.role == 'Admin'}"
-                   th:classappend="${active}=='admin' ? ' active' : ''"
-                   th:href="@{/admin}">
-                    Admin
-                </a>
-
-                <!-- LOGOUT -->
-                <a class="nav-link"
-                   th:if="${session.user != null}"
-                   th:href="@{/logout}">
-                    Logout
-                </a>
-
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" th:href="@{/staff}">Dashboard</a></li>
+                    <li><a class="dropdown-item" th:href="@{/staff/movies}">Manage Movies</a></li>
+                    <li><a class="dropdown-item" th:href="@{/staff/shows}">Manage Shows</a></li>
+                    <li><a class="dropdown-item" th:href="@{/staff/rooms}">Manage Rooms</a></li>
+                    <li><a class="dropdown-item" th:href="@{/staff/food}">Manage Food</a></li>
+                </ul>
             </div>
+
+            <!-- ADMIN -->
+            <a class="nav-link"
+               th:if="${session.user != null and session.user.role == 'Admin'}"
+               th:href="@{/admin}">
+                Admin
+            </a>
+
+            <a class="nav-link"
+               th:if="${session.user != null}"
+               th:href="@{/logout}">
+                Logout
+            </a>
+
+            <a class="nav-link"
+               th:if="${session.user == null}"
+               th:href="@{/login}">
+                Login
+            </a>
+
         </div>
     </div>
 </nav>

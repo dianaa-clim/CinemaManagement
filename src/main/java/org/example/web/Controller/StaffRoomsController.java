@@ -1,60 +1,48 @@
 package org.example.web.Controller;
 
-import org.example.web.store.CinemaStore;
+import common.Room;
+import org.example.server.service.RoomService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/staff/rooms")
 public class StaffRoomsController {
 
+    private final RoomService roomService;
+
+    public StaffRoomsController(RoomService roomService) {
+        this.roomService = roomService;
+    }
+
+    // ================= LIST =================
     @GetMapping
-    public String selectShow(Model model) {
-        model.addAttribute("shows", CinemaStore.SHOWS);
-        model.addAttribute("moviesById", CinemaStore.MOVIES);
+    public String rooms(Model model) {
+        model.addAttribute("rooms", roomService.findAll());
         return "staff/rooms";
     }
 
-    @GetMapping("/{showId}")
-    public String room(@PathVariable String showId, Model model) {
-
-        var show = CinemaStore.getShow(showId);
-        var movie = CinemaStore.getMovie(show.movieId());
-
-        Set<String> occupied =
-                new HashSet<>(CinemaStore.getOccupiedSeats(showId));
-
-        model.addAttribute("show", show);
-        model.addAttribute("movie", movie);
-        model.addAttribute("occupiedSeats", occupied);
-
-        model.addAttribute("rows", List.of("A","B","C","D","E"));
-        model.addAttribute("cols", List.of(1,2,3,4,5,6,7,8,9,10));
-
-        return "staff/room_view";
+    // ================= ADD FORM =================
+    @GetMapping("/new")
+    public String newRoom(Model model) {
+        model.addAttribute("room", new Room());
+        return "staff/room_new";
     }
 
-    @PostMapping("/{showId}/toggle")
-    public String toggleSeat(@PathVariable String showId,
-                             @RequestParam String seat) {
+    // ================= SAVE =================
+    @PostMapping("/new")
+    public String saveRoom(@ModelAttribute Room room) {
+        roomService.addRoom(room);
+        return "redirect:/staff/rooms";
+    }
 
-        CinemaStore.OCCUPIED_BY_SHOW_ID
-                .computeIfAbsent(showId, k -> new HashSet<>());
-
-        Set<String> occupied = CinemaStore.OCCUPIED_BY_SHOW_ID.get(showId);
-
-        if (occupied.contains(seat)) {
-            occupied.remove(seat);   // eliberare
-        } else {
-            occupied.add(seat);      // ocupare walk-in
+    // ================= DELETE =================
+    @PostMapping("/{id}/delete")
+    public String deleteRoom(@PathVariable int id) {
+        if (roomService.canDelete(id)) {
+            roomService.deleteRoom(id);
         }
-
-        return "redirect:/staff/rooms/" + showId;
+        return "redirect:/staff/rooms";
     }
 }
-

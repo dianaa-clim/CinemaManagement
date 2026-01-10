@@ -22,4 +22,11 @@ public class MovieService {
     public void addMovie(Movie movie) {
         movieDAO.insert(movie);
     }
+    public void deleteMovie(int id) {
+        movieDAO.deleteById(id);
+    }
+    public Movie findById(int id) {
+        return movieDAO.findById(id);
+    }
+
 }

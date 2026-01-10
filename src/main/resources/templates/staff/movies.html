@@ -132,6 +132,16 @@
         <td th:text="${m.rating}"></td>
         <td th:text="${m.duration} + ' min'"></td>
         <td th:text="${m.basePrice} + ' lei'"></td>
+        <td>
+          <form th:action="@{'/staff/movies/' + ${m.idMovie} + '/delete'}"
+                method="post"
+                onsubmit="return confirm('Delete this movie?');">
+            <button class="btn btn-danger btn-sm">
+              Delete
+            </button>
+          </form>
+        </td>
+
       </tr>
 
       <tr th:if="${#lists.isEmpty(movies)}">

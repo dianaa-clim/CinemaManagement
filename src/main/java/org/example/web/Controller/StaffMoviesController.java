@@ -31,7 +31,19 @@ public class StaffMoviesController {
 
     @PostMapping("/new")
     public String saveMovie(@ModelAttribute Movie movie) {
+
+        if (movie.getImageUrl() != null) {
+            movie.setImageUrl(movie.getImageUrl().trim());
+        }
+
         movieService.addMovie(movie);
         return "redirect:/staff/movies";
     }
+
+    @PostMapping("/{id}/delete")
+    public String deleteMovie(@PathVariable int id) {
+        movieService.deleteMovie(id);
+        return "redirect:/staff/movies";
+    }
+
 }

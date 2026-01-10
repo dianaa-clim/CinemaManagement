@@ -113,4 +113,53 @@ public class MovieDAO {
         return d != null ? d.toLocalDate() : null;
     }
 
+    public void deleteById(int id) {
+
+        String sql = "DELETE FROM film WHERE id_film = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public Movie findById(int id) {
+
+        String sql = """
+        SELECT id_film, title, duration, genre, description,
+               rating, base_price, image_url,
+               run_from, run_to, premiere_date
+        FROM film
+        WHERE id_film = ?
+    """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Movie(
+                        rs.getInt("id_film"),
+                        rs.getString("title"),
+                        rs.getInt("duration"),
+                        rs.getString("genre"),
+                        rs.getString("description"),
+                        rs.getBigDecimal("rating"),
+                        rs.getBigDecimal("base_price"),
+                        rs.getString("image_url"),
+                        getLocalDate(rs, "run_from"),
+                        getLocalDate(rs, "run_to"),
+                        getLocalDate(rs, "premiere_date")
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
 }
