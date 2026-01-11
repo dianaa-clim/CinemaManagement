@@ -1,34 +1,30 @@
 package org.example.server.service;
 
 import common.Review;
-import org.springframework.stereotype.Service;
 import org.example.server.dao.ReviewDAO;
 
 import java.util.List;
 
-@Service
 public class ReviewService {
-
     private final ReviewDAO reviewDAO;
 
     public ReviewService(ReviewDAO reviewDAO) {
         this.reviewDAO = reviewDAO;
     }
 
-    /**
-     * Adaugă un review (rating 1–5)
-     */
-    public boolean addReview(Review review) {
-
-        if (review.getRating() < 1 || review.getRating() > 5) {
-            return false;
-        }
-
-        reviewDAO.save(review);
-        return true;
+    public List<Review> getReviewsForFilm(int idFilm) {
+        return reviewDAO.findByFilm(idFilm);
     }
 
-    public List<Review> getReviewsForMovie(int idFilm) {
-        return reviewDAO.findByFilm(idFilm);
+    public Double getAverageRating(int idFilm) {
+        return reviewDAO.averageRating(idFilm);
+    }
+
+    public void addOrUpdateReview(int idClient, int idFilm, int rating, String textReview) {
+        if (rating < 1 || rating > 5) throw new IllegalArgumentException("Rating invalid");
+        if (textReview == null || textReview.isBlank()) throw new IllegalArgumentException("Review gol");
+        if (textReview.length() > 1000) throw new IllegalArgumentException("Max 1000 caractere");
+
+        reviewDAO.saveOrUpdate(idClient, idFilm, rating, textReview.trim());
     }
 }

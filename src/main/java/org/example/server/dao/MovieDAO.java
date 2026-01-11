@@ -161,5 +161,128 @@ public class MovieDAO {
         return null;
     }
 
+    /**
+     * Caută filme după titlu (case-insensitive), folosind LIKE.
+     * Exemplu: search="dune" -> titluri care conțin "dune".
+     */
+    public List<Movie> searchByTitle(String search) {
+        List<Movie> movies = new ArrayList<>();
+
+        String sql = """
+        SELECT id_film, title, duration, genre, description,
+               rating, base_price, image_url,
+               run_from, run_to, premiere_date
+        FROM film
+        WHERE LOWER(title) LIKE ?
+    """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, "%" + (search == null ? "" : search.toLowerCase()) + "%");
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Movie m = new Movie(
+                            rs.getInt("id_film"),
+                            rs.getString("title"),
+                            rs.getInt("duration"),
+                            rs.getString("genre"),
+                            rs.getString("description"),
+                            rs.getBigDecimal("rating"),
+                            rs.getBigDecimal("base_price"),
+                            rs.getString("image_url"),
+                            getLocalDate(rs, "run_from"),
+                            getLocalDate(rs, "run_to"),
+                            getLocalDate(rs, "premiere_date")
+                    );
+                    movies.add(m);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return movies;
+    }
+
+    public List<String> getAllGenres() {
+        List<String> genres = new ArrayList<>();
+        String sql = "SELECT DISTINCT genre FROM film WHERE genre IS NOT NULL AND genre <> '' ORDER BY genre";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                genres.add(rs.getString("genre"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return genres;
+    }
+
+    public List<Movie> findFiltered(String search, String genre) {
+        List<Movie> movies = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("""
+        SELECT id_film, title, duration, genre, description,
+               rating, base_price, image_url,
+               run_from, run_to, premiere_date
+        FROM film
+        WHERE 1=1
+    """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (search != null && !search.isBlank()) {
+            sql.append(" AND LOWER(title) LIKE ?");
+            params.add("%" + search.toLowerCase() + "%");
+        }
+
+        if (genre != null && !genre.isBlank()) {
+            sql.append(" AND genre = ?");
+            params.add(genre);
+        }
+
+        sql.append(" ORDER BY title");
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Movie m = new Movie(
+                            rs.getInt("id_film"),
+                            rs.getString("title"),
+                            rs.getInt("duration"),
+                            rs.getString("genre"),
+                            rs.getString("description"),
+                            rs.getBigDecimal("rating"),
+                            rs.getBigDecimal("base_price"),
+                            rs.getString("image_url"),
+                            getLocalDate(rs, "run_from"),
+                            getLocalDate(rs, "run_to"),
+                            getLocalDate(rs, "premiere_date")
+                    );
+                    movies.add(m);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return movies;
+    }
+
+
+
+
+
+
+
+
 
 }

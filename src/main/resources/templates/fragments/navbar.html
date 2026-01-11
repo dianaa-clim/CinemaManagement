@@ -1,13 +1,21 @@
-<!doctype html>
-<html lang="ro" xmlns:th="http://www.thymeleaf.org">
-<body>
-
 <nav th:fragment="navbar(active)" class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
 
         <a class="navbar-brand" th:href="@{/}">Cinema</a>
 
-        <div class="navbar-nav ms-auto gap-2 align-items-center">
+        <!-- SEARCH -->
+        <form class="d-flex ms-4 me-auto"
+              th:action="@{/movies}"
+              method="get">
+            <input class="form-control form-control-sm me-2"
+                   type="search"
+                   name="search"
+                   placeholder="Caută film..."
+                   th:value="${search}">
+            <button class="btn btn-outline-light btn-sm">🔍</button>
+        </form>
+
+        <div class="navbar-nav gap-2 align-items-center">
 
             <a class="nav-link"
                th:classappend="${active == 'home'} ? 'active' : ''"
@@ -22,42 +30,34 @@
             </a>
 
             <a class="nav-link"
-               th:classappend="${active == 'food'} ? 'active' : ''"
                th:href="@{/food}">
                 Food
             </a>
 
+            <!-- USER NORMAL -->
             <a class="nav-link"
-               th:if="${session.user != null}"
+               th:if="${session.user != null
+           and session.user.role != 'Admin'
+           and session.user.role != 'Employee'}"
                th:href="@{/account}">
                 Contul meu
             </a>
 
             <!-- STAFF -->
-            <div class="nav-item dropdown"
-                 th:if="${session.user != null and session.user.role == 'Employee'}">
-
-                <a class="nav-link dropdown-toggle"
-                   href="#" data-bs-toggle="dropdown">
-                    Staff
-                </a>
-
-                <ul class="dropdown-menu dropdown-menu-dark">
-                    <li><a class="dropdown-item" th:href="@{/staff}">Dashboard</a></li>
-                    <li><a class="dropdown-item" th:href="@{/staff/movies}">Manage Movies</a></li>
-                    <li><a class="dropdown-item" th:href="@{/staff/shows}">Manage Shows</a></li>
-                    <li><a class="dropdown-item" th:href="@{/staff/rooms}">Manage Rooms</a></li>
-                    <li><a class="dropdown-item" th:href="@{/staff/food}">Manage Food</a></li>
-                </ul>
-            </div>
+            <a class="btn btn-outline-warning btn-sm"
+               th:if="${session.user != null and session.user.role == 'Employee'}"
+               th:href="@{/staff}">
+                Staff
+            </a>
 
             <!-- ADMIN -->
-            <a class="nav-link"
+            <a class="btn btn-outline-danger btn-sm"
                th:if="${session.user != null and session.user.role == 'Admin'}"
                th:href="@{/admin}">
                 Admin
             </a>
 
+            <!-- AUTH -->
             <a class="nav-link"
                th:if="${session.user != null}"
                th:href="@{/logout}">
@@ -73,6 +73,3 @@
         </div>
     </div>
 </nav>
-
-</body>
-</html>

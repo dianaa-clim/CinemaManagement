@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<footer th:fragment="footer" class="footer py-4 mt-5">
+  <div class="container d-flex justify-content-between flex-wrap gap-2">
+    <div>© <span th:text="${#dates.year(#dates.createNow())}">2026</span> Cinema</div>
+    <div class="d-flex gap-3" style="color: var(--muted);">
+      <span>Tickets</span>
+      <span>Snacks</span>
+      <span>Contact</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

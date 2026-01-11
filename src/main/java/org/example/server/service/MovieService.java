@@ -19,6 +19,18 @@ public class MovieService {
         return movieDAO.findAll();
     }
 
+    public List<Movie> searchByTitle(String search) {
+        return movieDAO.searchByTitle(search);
+    }
+
+    public List<Movie> findFiltered(String search, String genre) {
+        return movieDAO.findFiltered(search, genre);
+    }
+    public List<String> getAllGenres() {
+        return movieDAO.getAllGenres();
+    }
+
+
     public void addMovie(Movie movie) {
         movieDAO.insert(movie);
     }

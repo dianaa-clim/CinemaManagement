@@ -1,129 +1,163 @@
 package org.example.server.dao;
 
 import common.Review;
-import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
 public class ReviewDAO {
-
     private final Connection connection;
 
     public ReviewDAO(Connection connection) {
         this.connection = connection;
     }
 
-    /**
-     * Adaugă un review nou
-     */
-    public void save(Review review) {
+//    public List<Review> findByFilm(int idFilm) {
+//        List<Review> out = new ArrayList<>();
+//        String sql = """
+//            SELECT id_review, id_client, id_film, text_review, rating, date
+//            FROM review
+//            WHERE id_film = ?
+//            ORDER BY date DESC
+//        """;
+//
+//        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+//            ps.setInt(1, idFilm);
+//            try (ResultSet rs = ps.executeQuery()) {
+//                while (rs.next()) out.add(map(rs));
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return out;
+//    }
 
-        String sql = """
-            INSERT INTO reviews (id_client, id_film, text_review, rating, review_date)
-            VALUES (?, ?, ?, ?, ?)
-        """;
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-
-            stmt.setInt(1, review.getIdClient());
-            stmt.setInt(2, review.getIdFilm());
-            stmt.setString(3, review.getTextReview());
-            stmt.setInt(4, review.getRating());
-            stmt.setDate(5, Date.valueOf(review.getDate()));
-
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Returnează toate review-urile unui film
-     */
     public List<Review> findByFilm(int idFilm) {
-
-        List<Review> reviews = new ArrayList<>();
+        List<Review> out = new ArrayList<>();
 
         String sql = """
-            SELECT id_review, id_client, id_film, text_review, rating, review_date
-            FROM reviews
-            WHERE id_film = ?
-            ORDER BY review_date DESC
-        """;
+        SELECT r.id_review, r.id_client, r.id_film,
+               r.text_review, r.rating, r.date,
+               a.username
+        FROM review r
+        JOIN client c ON c.id_client = r.id_client
+        JOIN account a ON a.id_account = c.id_account
+        WHERE r.id_film = ?
+        ORDER BY r.date DESC
+    """;
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idFilm);
 
-            stmt.setInt(1, idFilm);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                reviews.add(mapReview(rs));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Review r = map(rs);
+                    if (r != null) {
+                        out.add(r);
+                    }
+                }
             }
-
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return reviews;
+        return out;
     }
 
-    /**
-     * Returnează review-urile unui client
-     */
-    public List<Review> findByClient(int idClient) {
 
-        List<Review> reviews = new ArrayList<>();
-
+    public Review findByClientAndFilm(int idClient, int idFilm) {
         String sql = """
-            SELECT id_review, id_client, id_film, text_review, rating, review_date
-            FROM reviews
-            WHERE id_client = ?
-            ORDER BY review_date DESC
+            SELECT id_review, id_client, id_film, text_review, rating, date
+            FROM review
+            WHERE id_client = ? AND id_film = ?
+            LIMIT 1
         """;
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-
-            stmt.setInt(1, idClient);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                reviews.add(mapReview(rs));
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idClient);
+            ps.setInt(2, idFilm);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return map(rs);
             }
-
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return reviews;
+        return null;
     }
 
-    /**
-     * Mapare ResultSet → Review
-     */
-    private Review mapReview(ResultSet rs) throws SQLException {
+    public void saveOrUpdate(int idClient, int idFilm, int rating, String textReview) {
+        Review existing = findByClientAndFilm(idClient, idFilm);
 
-        Date sqlDate = rs.getDate("review_date");
+        if (existing == null) {
+            String ins = """
+                INSERT INTO review (id_client, id_film, text_review, rating, date)
+                VALUES (?, ?, ?, ?, NOW())
+            """;
+            try (PreparedStatement ps = connection.prepareStatement(ins)) {
+                ps.setInt(1, idClient);
+                ps.setInt(2, idFilm);
+                ps.setString(3, textReview);
+                ps.setInt(4, rating);
+                ps.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            String upd = """
+                UPDATE review
+                SET text_review = ?, rating = ?, date = NOW()
+                WHERE id_review = ?
+            """;
+            try (PreparedStatement ps = connection.prepareStatement(upd)) {
+                ps.setString(1, textReview);
+                ps.setInt(2, rating);
+                ps.setInt(3, existing.getIdReview());
+                ps.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-        Review review = new Review(
+    public Double averageRating(int idFilm) {
+        String sql = "SELECT AVG(rating) AS avg_rating FROM review WHERE id_film = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idFilm);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    double v = rs.getDouble("avg_rating");
+                    return rs.wasNull() ? null : v;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Review map(ResultSet rs) throws SQLException {
+        Timestamp ts = rs.getTimestamp("date");
+        LocalDateTime dt = (ts == null) ? null : ts.toLocalDateTime();
+
+        Review r = new Review(
+                rs.getInt("id_review"),
                 rs.getInt("id_client"),
                 rs.getInt("id_film"),
                 rs.getString("text_review"),
                 rs.getInt("rating"),
-                sqlDate != null ? sqlDate.toLocalDate() : null
+                dt
         );
 
-        // dacă vrei să păstrezi și idReview
-        review.setIdClient(rs.getInt("id_client"));
-        review.setIdFilm(rs.getInt("id_film"));
+        // username există doar în query-ul cu JOIN
+        try {
+            r.setUsername(rs.getString("username"));
+        } catch (SQLException ignored) {
+            // nu avem coloana username în acest ResultSet (ex: findByClientAndFilm)
+        }
 
-        return review;
+        return r;
     }
+
 }

@@ -1,179 +1,200 @@
-<!--<!doctype html>-->
-<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8" />-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1" />-->
-<!--    <title>Cinema</title>-->
-
-<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">-->
-<!--    <link rel="stylesheet" th:href="@{/css/app.css}">-->
-<!--</head>-->
-<!--<body>-->
-
-<!--&lt;!&ndash; NAVBAR (fragment) &ndash;&gt;-->
-<!--<div th:replace="~{fragments/navbar :: navbar('home')}"></div>-->
-
-<!--<main class="container py-4 py-md-5">-->
-
-<!--    &lt;!&ndash; HERO / FEATURED MOVIE &ndash;&gt;-->
-<!--    <section class="hero p-4 p-md-5 mb-4">-->
-<!--        <div class="row align-items-center g-4">-->
-
-<!--            &lt;!&ndash; Left: text &ndash;&gt;-->
-<!--            <div class="col-md-7">-->
-<!--                <div class="d-flex gap-2 mb-3 flex-wrap">-->
-<!--                    <span class="badge badge-soft rounded-pill px-3 py-2">Fast booking</span>-->
-<!--                    <span class="badge badge-soft rounded-pill px-3 py-2">Schedules</span>-->
-<!--                    <span class="badge badge-soft rounded-pill px-3 py-2">Reviews</span>-->
-<!--                </div>-->
-
-<!--                <h1 class="display-5 fw-semibold mb-3">-->
-<!--                    Book your seat in minutes.-->
-<!--                </h1>-->
-
-<!--                <p class="lead" style="color: var(&#45;&#45;muted);">-->
-<!--                    Browse movies, check showtimes, and reserve your seats in just a few clicks.-->
-<!--                </p>-->
-
-<!--                <div class="d-flex gap-2 flex-wrap mt-3">-->
-<!--                    <a class="btn btn-primary btn-lg" th:href="@{/movies}">Browse movies</a>-->
-<!--                    <a class="btn btn-outline-light btn-lg" href="#now">Now playing</a>-->
-<!--                </div>-->
-
-<!--                <div class="mt-4" style="color: var(&#45;&#45;muted); font-size: .95rem;">-->
-<!--                    Featured movie-->
-<!--                </div>-->
-<!--                <div class="d-flex align-items-center gap-3 mt-2">-->
-<!--                    <div class="fw-semibold fs-5">Dune: Part Two</div>-->
-<!--                    <span class="badge badge-soft">Sci-Fi</span>-->
-<!--                    <span class="badge badge-soft">166 min</span>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Right: poster image card &ndash;&gt;-->
-<!--            <div class="col-md-5">-->
-<!--                <div class="card p-3">-->
-<!--                    <div class="ratio ratio-2x3 rounded overflow-hidden">-->
-<!--                        &lt;!&ndash; Put a real poster later: /img/posters/dune2.jpg &ndash;&gt;-->
-<!--                        <img-->
-<!--                                th:src="@{/img/featured/dune2Poster.jpg}"-->
-<!--                                alt="Featured poster"-->
-<!--                                class="w-100 h-100"-->
-<!--                                style="object-fit: cover;"-->
-<!--                                onerror="this.style.display='none'; this.parentElement.style.background='rgba(255,255,255,0.06)'; this.parentElement.innerHTML='<div class=&quot;d-flex h-100 align-items-center justify-content-center text-center px-3&quot;><div><div class=&quot;fw-semibold&quot;>Poster not found</div><div style=&quot;color: var(&#45;&#45;muted); font-size: 0.95rem;&quot;>Add /static/img/posters/featured.jpg</div></div></div>';"-->
-<!--                        >-->
-<!--                    </div>-->
-
-<!--                    <div class="mt-3 d-flex justify-content-between align-items-center">-->
-<!--                        <div>-->
-<!--                            <div class="fw-semibold">Dune: Part Two</div>-->
-<!--                            <div style="color: var(&#45;&#45;muted);">Showtimes & details</div>-->
-<!--                        </div>-->
-<!--                        <a class="btn btn-sm btn-primary" th:href="@{/movies/dune2(date=${today})}">Open</a>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--        </div>-->
-<!--    </section>-->
-
-<!--    &lt;!&ndash; NOW PLAYING &ndash;&gt;-->
-<!--    <section id="now" class="mb-4">-->
-<!--        <div class="d-flex justify-content-between align-items-center mb-3">-->
-<!--            <h2 class="h4 m-0">Now playing</h2>-->
-<!--            <a class="link-light" th:href="@{/movies}" style="text-decoration:none;">See all →</a>-->
-<!--        </div>-->
-
-<!--        <div class="row g-3">-->
-<!--            <div class="col-sm-6 col-lg-3" th:each="m : ${nowPlaying}">-->
-<!--                <div class="card h-100">-->
-<!--                    <div class="ratio ratio-2x3 rounded-top overflow-hidden" style="background: rgba(255,255,255,0.06);">-->
-<!--                        <img class="w-100 h-100" style="object-fit: cover;"-->
-<!--                             th:src="@{${m.imageUrl}}"-->
-<!--                             alt="Poster"-->
-<!--                             onerror="this.style.display='none'">-->
-<!--                    </div>-->
-<!--                    <div class="card-body">-->
-<!--                        <h5 class="card-title mb-2" th:text="${m.title}">Movie</h5>-->
-<!--                        <div class="d-flex gap-2 flex-wrap mb-2">-->
-<!--                            <span class="badge badge-soft" th:text="${m.genre}">Genre</span>-->
-<!--                            <span class="badge badge-soft" th:text="${m.duration}">Duration</span>-->
-<!--                        </div>-->
-
-<!--                        <div class="d-flex gap-2">-->
-
-<!--                            &lt;!&ndash; In Home, "Showtimes" still goes to the detailed movie page (anchor to the showtimes section) &ndash;&gt;-->
-<!--                            <a class="btn btn-primary w-100"-->
-<!--                               th:href="@{/movies/{id}(id=${m.id}, date=${today})} + '#showtimes'">-->
-<!--                                Showtimes-->
-<!--                            </a>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </section>-->
-
-<!--    &lt;!&ndash; QUICK SEARCH (dummy UI) &ndash;&gt;-->
-<!--    <section class="mb-5">-->
-<!--        <h2 class="h4 mb-3">Quick search</h2>-->
-
-<!--        <div class="card p-3">-->
-<!--            <form class="row g-3 align-items-end">-->
-<!--                <div class="col-md-4">-->
-<!--                    <label class="form-label">Date</label>-->
-<!--                    <input type="date" class="form-control">-->
-<!--                </div>-->
-<!--                <div class="col-md-4">-->
-<!--                    <label class="form-label">Genre</label>-->
-<!--                    <select class="form-select">-->
-<!--                        <option>Any</option>-->
-<!--                        <option>Sci-Fi</option>-->
-<!--                        <option>Drama</option>-->
-<!--                        <option>Animation</option>-->
-<!--                    </select>-->
-<!--                </div>-->
-<!--                <div class="col-md-4 d-grid">-->
-<!--                    <a class="btn btn-primary" th:href="@{/movies}">Search</a>-->
-<!--                </div>-->
-<!--            </form>-->
-<!--            <div class="mt-2" style="color: var(&#45;&#45;muted); font-size: .95rem;">-->
-<!--                (Dummy UI for now — we’ll connect filters later.)-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </section>-->
-
-<!--</main>-->
-
-<!--<footer class="footer py-4">-->
-<!--    <div class="container d-flex justify-content-between flex-wrap gap-2">-->
-<!--        <div>© 2026 Cinema</div>-->
-<!--        <div>Contact • Location • Terms</div>-->
-<!--    </div>-->
-<!--</footer>-->
-
-<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>-->
-<!--</body>-->
-<!--</html>-->
 <!doctype html>
 <html lang="ro" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Cinema</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-</head>
+<head th:replace="~{fragments/head :: head('Cinema')}"></head>
+
 <body>
 
-<div th:replace="~{fragments/navbar :: navbar(active='home')}"></div>
+<div th:replace="~{fragments/navbar :: navbar('home')}"></div>
 
-<main class="container py-5">
-    <h1 class="text-light mb-3">Welcome to Cinema 🎬</h1>
-    <p class="text-muted">
-        Book tickets, explore movies and enjoy snacks.
-    </p>
+<main class="container py-4 py-md-5">
+
+  <!-- HERO: Featured movie -->
+  <section class="hero hero-wrap p-4 p-md-5 mb-4" th:if="${featuredMovie != null}">
+
+    <div class="row align-items-center g-4">
+      <!-- LEFT -->
+      <div class="col-lg-7 pt-4 pt-lg-5">
+
+        <!-- cinema-like tagline -->
+        <div class="text-uppercase mb-3"
+             style="letter-spacing: .25em; font-size: 12px; color: var(--muted);">
+          Experiența cinematografică începe aici
+        </div>
+
+        <div class="d-flex gap-2 mb-3 flex-wrap">
+          <span class="badge text-bg-dark border">Now in cinemas</span>
+          <span class="badge text-bg-dark border" th:text="${featuredMovie.genre}">Genre</span>
+          <span class="badge text-bg-dark border">
+            <span th:text="${featuredMovie.duration}">120</span> min
+          </span>
+        </div>
+
+        <!-- title a bit smaller -->
+        <h1 class="h3 fw-semibold mb-3" th:text="${featuredMovie.title}">Featured movie</h1>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <a class="btn btn-primary"
+             th:href="@{/movies/{id}(id=${featuredMovie.idMovie})}">
+            Vezi detalii
+          </a>
+          <a class="btn btn-outline-light" th:href="@{/movies}">
+            Vezi toate filmele
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="col-lg-5">
+        <div class="card p-2 p-md-3 poster-card">
+          <div class="ratio rounded overflow-hidden"
+               style="--bs-aspect-ratio: 150%; background: rgba(255,255,255,0.06);">
+
+            <img th:src="${featuredMovie.imageUrl != null and (#strings.startsWith(featuredMovie.imageUrl,'http') or #strings.startsWith(featuredMovie.imageUrl,'/'))
+              ? featuredMovie.imageUrl
+              : '/img/movies/' + (featuredMovie.imageUrl != null ? featuredMovie.imageUrl : 'avatar.jpg')}"
+                 alt="Poster"
+                 class="w-100 h-100"
+                 style="object-fit: cover;"
+                 onerror="this.onerror=null; this.src='/img/movies/avatar.jpg'">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOW PLAYING -->
+  <section class="mt-4">
+    <div class="d-flex justify-content-between align-items-end gap-3 mb-3">
+      <div>
+        <h2 class="h4 mb-1">Filmele din cinema acum</h2>
+        <div style="color: var(--muted);">Alege un film și intră pe pagina de detalii.</div>
+      </div>
+      <a class="btn btn-sm btn-outline-light" th:href="@{/movies}">Program complet</a>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-6 col-md-4 col-lg-3" th:each="m : ${moviesNow}">
+        <div class="card h-100 movie-card">
+          <div class="ratio rounded overflow-hidden"
+               style="--bs-aspect-ratio: 150%; background: rgba(255,255,255,0.06);">
+
+            <img th:src="${m.imageUrl != null and (#strings.startsWith(m.imageUrl,'http') or #strings.startsWith(m.imageUrl,'/'))
+              ? m.imageUrl
+              : '/img/movies/' + (m.imageUrl != null ? m.imageUrl : 'avatar.jpg')}"
+                 alt="Poster"
+                 class="w-100 h-100"
+                 style="object-fit: cover;"
+                 onerror="this.onerror=null; this.src='/img/movies/avatar.jpg'">
+          </div>
+
+          <div class="p-3 d-flex flex-column gap-2">
+            <div class="fw-semibold" th:text="${m.title}">Movie title</div>
+
+            <div class="small" style="color: var(--muted);">
+              <span th:text="${m.genre}">Genre</span>
+              <span class="mx-1">•</span>
+              <span th:text="${m.duration}">120</span> min
+            </div>
+
+            <a class="btn btn-sm btn-primary mt-1"
+               th:href="@{/movies/{id}(id=${m.idMovie})}">
+              Detalii film
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12" th:if="${#lists.isEmpty(moviesNow)}">
+        <div class="card p-3" style="color: var(--muted);">
+          Nu există filme active în acest moment.
+          <a class="ms-2 link-light" th:href="@{/movies}">Vezi toate filmele</a>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMING SOON -->
+  <section class="mt-5">
+    <div class="d-flex justify-content-between align-items-end gap-3 mb-3">
+      <div>
+        <h2 class="h4 mb-1">Filme care urmează</h2>
+        <div style="color: var(--muted);">În curând pe marele ecran.</div>
+      </div>
+      <a class="btn btn-sm btn-outline-light" th:href="@{/movies}">Vezi toate</a>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-6 col-md-4 col-lg-3" th:each="m : ${moviesUpcoming}">
+        <div class="card h-100 movie-card">
+          <div class="ratio rounded overflow-hidden"
+               style="--bs-aspect-ratio: 150%; background: rgba(255,255,255,0.06);">
+
+            <img th:src="${m.imageUrl != null and (#strings.startsWith(m.imageUrl,'http') or #strings.startsWith(m.imageUrl,'/'))
+              ? m.imageUrl
+              : '/img/movies/' + (m.imageUrl != null ? m.imageUrl : 'avatar.jpg')}"
+                 alt="Poster"
+                 class="w-100 h-100"
+                 style="object-fit: cover;"
+                 onerror="this.onerror=null; this.src='/img/movies/avatar.jpg'">
+          </div>
+
+          <div class="p-3 d-flex flex-column gap-2">
+            <div class="fw-semibold" th:text="${m.title}">Movie title</div>
+
+            <div class="small" style="color: var(--muted);">
+              <span th:text="${m.genre}">Genre</span>
+              <span class="mx-1">•</span>
+              <span th:text="${m.duration}">120</span> min
+            </div>
+
+            <div class="small" style="color: var(--muted);" th:if="${m.runFrom != null}">
+              Din <span th:text="${#temporals.format(m.runFrom, 'dd MMM yyyy')}">01 Jan 2026</span>
+            </div>
+
+            <a class="btn btn-sm btn-outline-light mt-1"
+               th:href="@{/movies/{id}(id=${m.idMovie})}">
+              Detalii film
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12" th:if="${#lists.isEmpty(moviesUpcoming)}">
+        <div class="card p-3" style="color: var(--muted);">
+          Momentan nu avem filme anunțate “în curând”.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- EXTRA -->
+  <section class="row g-3 mt-4">
+    <div class="col-md-4">
+      <a class="card p-3 h-100 text-decoration-none text-reset feature-card" th:href="@{/food}">
+        <div class="fw-semibold mb-1">🍿 Food & Drinks</div>
+        <div style="color: var(--muted);">Comandă popcorn și băuturi direct din aplicație.</div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a class="card p-3 h-100 text-decoration-none text-reset feature-card" th:href="@{/movies}">
+        <div class="fw-semibold mb-1">🎟️ Rezervă rapid</div>
+        <div style="color: var(--muted);">Alege filmul, ora și locurile în câteva clickuri.</div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a class="card p-3 h-100 text-decoration-none text-reset feature-card" th:href="@{/account}">
+        <div class="fw-semibold mb-1">👤 Contul tău</div>
+        <div style="color: var(--muted);">Intră în cont ca să vezi rezervările tale.</div>
+      </a>
+    </div>
+  </section>
+
 </main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
 
 </body>
 </html>

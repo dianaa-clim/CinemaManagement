@@ -4,6 +4,7 @@ import common.Reservation;
 import org.example.server.dao.ReservationDAO;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -16,11 +17,15 @@ public class ReservationService {
     }
 
     public List<Reservation> getActiveReservationsForUser(int accountId) {
-        return reservationDAO.findActiveByAccount(accountId);
+        Integer clientId = reservationDAO.findClientIdByAccountId(accountId);
+        if (clientId == null) return Collections.emptyList();
+        return reservationDAO.findActiveByClient(clientId);
     }
 
     public List<Reservation> getCanceledReservationsForUser(int accountId) {
-        return reservationDAO.findCanceledByAccount(accountId);
+        Integer clientId = reservationDAO.findClientIdByAccountId(accountId);
+        if (clientId == null) return Collections.emptyList();
+        return reservationDAO.findCanceledByClient(clientId);
     }
 
     public int countAll() {
@@ -29,6 +34,9 @@ public class ReservationService {
 
     public void createReservation(Reservation reservation) {
         reservationDAO.save(reservation);
+    }
+    public Integer getClientIdByAccountId(int accountId) {
+        return reservationDAO.findClientIdByAccountId(accountId);
     }
 
     public void cancelReservation(int reservationId, int accountId) {

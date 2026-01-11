@@ -1,13 +1,7 @@
 <!doctype html>
 <html lang="ro" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Contul meu</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-</head>
+<head th:replace="~{fragments/head :: head('Contul meu • Cinema')}"></head>
 <body>
 
 <div th:replace="~{fragments/navbar :: navbar('account')}"></div>
@@ -17,51 +11,61 @@
     <div class="card p-3 p-md-4 mb-3">
         <h1 class="h3 mb-1">Contul meu</h1>
         <div style="color: var(--muted);">
-            Conectat ca <span class="fw-semibold" th:text="${username}">user</span>
+            Conectat ca <span class="fw-semibold" th:text="${user.username}">user</span>
         </div>
     </div>
 
+    <!-- ================= ACTIVE ================= -->
     <div class="card p-3 p-md-4 mb-3">
         <h2 class="h5 mb-3">Rezervări active</h2>
 
-        <div th:if="${#lists.isEmpty(activeReservations)}"
-             style="color: var(--muted);">
+        <div th:if="${#lists.isEmpty(activeReservations)}" style="color: var(--muted);">
             Nu ai rezervări active.
         </div>
 
-        <div class="d-flex flex-column gap-2"
-             th:each="r : ${activeReservations}">
-            <div class="p-3 rounded"
-                 style="background: rgba(255,255,255,0.06);">
+        <div class="d-flex flex-column gap-2" th:each="r : ${activeReservations}">
+            <div class="p-3 rounded" style="background: rgba(255,255,255,0.06);">
                 <div class="d-flex justify-content-between flex-wrap gap-2">
 
                     <div>
                         <div class="fw-semibold">
-                            Rezervare <span th:text="${r.id}"></span>
+                            Rezervare <span th:text="${r.idReservation}">1</span>
                         </div>
+
                         <div style="color: var(--muted); font-size:.95rem;">
-                            Locuri:
-                            <span th:text="${#strings.arrayJoin(r.seats.toArray(), ', ')}"></span>
+                            Film ID: <span th:text="${r.idFilm}">5</span>
+                            • Sala ID: <span th:text="${r.idCinemaRoom}">1</span>
+                            • Data: <span th:text="${r.dateReservation}">2026-01-11</span>
+                        </div>
+
+                        <!-- seatCode din idSeat: A1..F10 -->
+                        <div style="color: var(--muted); font-size:.95rem;"
+                             th:with="
+                                seatId=${r.idSeat},
+                                rowIndex=${(seatId - 1) / 10},
+                                colIndex=${((seatId - 1) % 10) + 1},
+                                rowLetter=${rowIndex == 0 ? 'A' :
+                                           (rowIndex == 1 ? 'B' :
+                                           (rowIndex == 2 ? 'C' :
+                                           (rowIndex == 3 ? 'D' :
+                                           (rowIndex == 4 ? 'E' : 'F'))))}
+                             ">
+                            Loc: <span class="fw-semibold text-white"
+                                       th:text="${rowLetter + colIndex}">A1</span>
+                            • Seat ID: <span th:text="${r.idSeat}">1</span>
                         </div>
                     </div>
 
                     <div class="d-flex gap-2">
-                        <form th:action="@{/account/reservations/{id}/cancel(id=${r.id})}"
-                              method="post">
-                            <button type="button"
-                                    class="btn btn-outline-light btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#cancelModal"
-                                    th:data-res-id="${r.id}"
-                                    th:data-seats="${#strings.arrayJoin(r.seats.toArray(), ', ')}">
-                                Anulează
-                            </button>
-                        </form>
-
-                        <a class="btn btn-primary btn-sm"
-                           th:href="@{/booking(showId=${r.showId})}">
-                            Rezervă din nou
-                        </a>
+                        <!-- deschide modal, form real e în modal -->
+                        <button type="button"
+                                class="btn btn-outline-light btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#cancelModal"
+                                th:data-res-id="${r.idReservation}"
+                                th:data-seat-id="${r.idSeat}">
+                            Anulează
+                        </button>
                     </div>
 
                 </div>
@@ -69,29 +73,44 @@
         </div>
     </div>
 
+    <!-- ================= CANCELED ================= -->
     <div class="card p-3 p-md-4">
         <h2 class="h5 mb-3">Rezervări anulate</h2>
 
-        <div th:if="${#lists.isEmpty(canceledReservations)}"
-             style="color: var(--muted);">
+        <div th:if="${#lists.isEmpty(canceledReservations)}" style="color: var(--muted);">
             Nu ai rezervări anulate.
         </div>
 
-        <div class="d-flex flex-column gap-2"
-             th:each="r : ${canceledReservations}">
-            <div class="p-3 rounded"
-                 style="background: rgba(255,255,255,0.04);">
+        <div class="d-flex flex-column gap-2" th:each="r : ${canceledReservations}">
+            <div class="p-3 rounded" style="background: rgba(255,255,255,0.04);">
                 <div class="fw-semibold">
-                    Rezervare <span th:text="${r.id}"></span>
+                    Rezervare <span th:text="${r.idReservation}">1</span>
                 </div>
+
                 <div style="color: var(--muted); font-size:.95rem;">
-                    Locuri:
-                    <span th:text="${#strings.arrayJoin(r.seats.toArray(), ', ')}"></span>
+                    Film ID: <span th:text="${r.idFilm}">5</span>
+                    • Sala ID: <span th:text="${r.idCinemaRoom}">1</span>
+                    • Data: <span th:text="${r.dateReservation}">2026-01-11</span>
+                </div>
+
+                <div style="color: var(--muted); font-size:.95rem;"
+                     th:with="
+                        seatId=${r.idSeat},
+                        rowIndex=${(seatId - 1) / 10},
+                        colIndex=${((seatId - 1) % 10) + 1},
+                        rowLetter=${rowIndex == 0 ? 'A' :
+                                   (rowIndex == 1 ? 'B' :
+                                   (rowIndex == 2 ? 'C' :
+                                   (rowIndex == 3 ? 'D' :
+                                   (rowIndex == 4 ? 'E' : 'F'))))}
+                     ">
+                    Loc: <span class="fw-semibold text-white"
+                               th:text="${rowLetter + colIndex}">A1</span>
+                    • Seat ID: <span th:text="${r.idSeat}">1</span>
                 </div>
             </div>
         </div>
     </div>
-
 
     <!-- Delete account (placeholder) -->
     <div class="card p-3 p-md-4 mt-3">
@@ -110,15 +129,11 @@
     <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content"
-                 style="background: rgba(20,25,35,0.98);
-                border: 1px solid rgba(255,255,255,0.12);">
+                 style="background: rgba(20,25,35,0.98); border: 1px solid rgba(255,255,255,0.12);">
 
-                <div class="modal-header"
-                     style="border-bottom: 1px solid rgba(255,255,255,0.12);">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.12);">
                     <h5 class="modal-title">Confirmare anulare</h5>
-                    <button type="button"
-                            class="btn-close btn-close-white"
-                            data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
@@ -127,25 +142,20 @@
                     </div>
 
                     <div style="color: var(--muted); font-size: .95rem;">
-                        Rezervare:
-                        <span id="cancelReservationId"></span>
+                        Rezervare: <span id="cancelReservationId"></span>
                     </div>
 
                     <div style="color: var(--muted); font-size: .95rem;">
-                        Locuri:
-                        <span id="cancelSeats"></span>
+                        Seat ID: <span id="cancelSeatId"></span>
                     </div>
                 </div>
 
-                <div class="modal-footer"
-                     style="border-top: 1px solid rgba(255,255,255,0.12);">
-                    <button type="button"
-                            class="btn btn-outline-light"
-                            data-bs-dismiss="modal">
+                <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.12);">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">
                         Renunță
                     </button>
 
-                    <!-- FORM REAL DE ANULARE -->
+                    <!-- form real -->
                     <form id="cancelForm" method="post">
                         <button type="submit" class="btn btn-danger">
                             Da, anulează
@@ -157,25 +167,26 @@
         </div>
     </div>
 
-
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
 <script>
     (function () {
         const modal = document.getElementById('cancelModal');
         const idSpan = document.getElementById('cancelReservationId');
-        const seatsSpan = document.getElementById('cancelSeats');
+        const seatSpan = document.getElementById('cancelSeatId');
         const form = document.getElementById('cancelForm');
 
         modal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
 
             const reservationId = button.getAttribute('data-res-id');
-            const seats = button.getAttribute('data-seats');
+            const seatId = button.getAttribute('data-seat-id');
 
             idSpan.textContent = reservationId;
-            seatsSpan.textContent = seats;
+            seatSpan.textContent = seatId;
 
             form.action = '/account/reservations/' + reservationId + '/cancel';
         });

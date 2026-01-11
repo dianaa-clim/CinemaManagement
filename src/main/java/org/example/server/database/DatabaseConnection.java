@@ -20,9 +20,14 @@ public class DatabaseConnection {
         }
 
         return DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/cinema?useSSL=false&serverTimezone=UTC",
-                "root",
-                "Diana*1234"
+                "jdbc:mysql://localhost:3306/cinema?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
+                "student",
+                "student"
+
         );
     }
 }
+
+//                "jdbc:mysql://localhost:3306/cinema?useSSL=false&serverTimezone=UTC",
+//                "root",
+//                "Diana*1234"

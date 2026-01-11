@@ -32,6 +32,30 @@ body{
     border-radius: 14px;
 }
 
+/* Clickable card links */
+a.card{
+    color: inherit;
+    transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+a.card:hover{
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.18);
+}
+
+/* Better form controls on dark bg */
+.form-control, .form-select{
+    background-color: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.14);
+    color: var(--text);
+}
+.form-control:focus, .form-select:focus{
+    background-color: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.28);
+    box-shadow: 0 0 0 .25rem rgba(225,29,72,0.18);
+    color: var(--text);
+}
+.text-muted{ color: var(--muted) !important; }
+
 .card .card-title{ color: var(--text); }
 .card .card-text{ color: var(--muted); }
 
@@ -90,5 +114,190 @@ label.btn:has(.btn-check:checked) {
     border-color: rgba(255,255,255,0.55) !important;
     background: rgba(255,255,255,0.10) !important;
 }
+
+/* Home cards */
+.movie-card { transition: transform .15s ease, border-color .15s ease; }
+.movie-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.18); }
+.feature-card { transition: transform .15s ease, border-color .15s ease; }
+.feature-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.18); }
+
+/* 2x3 poster ratio (Bootstrap nu are ratio-2x3 by default) */
+.ratio-poster { --bs-aspect-ratio: 150%; }
+
+/* HERO polish */
+.hero-wrap{
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 18px;
+    background: radial-gradient(1200px 400px at 10% 10%, rgba(255,0,80,.12), transparent 60%),
+    radial-gradient(900px 400px at 80% 30%, rgba(0,120,255,.10), transparent 55%),
+    rgba(255,255,255,.03);
+}
+
+.poster-card{
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(0,0,0,.18);
+    box-shadow: 0 18px 60px rgba(0,0,0,.35);
+}
+
+.movie-card{
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(255,255,255,.03);
+    transition: transform .15s ease, border-color .15s ease;
+}
+
+.movie-card:hover{
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,.18);
+}
+
+/* ===== SEAT SELECTION ===== */
+
+.seat-grid{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    align-items:center;
+}
+
+.seat-row-wrap{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.seat-row-label{
+    width:24px;
+    text-align:center;
+    font-weight:600;
+    color: rgba(255,255,255,.55);
+}
+
+.seat-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.seat-check{
+    display:none;
+}
+
+.seat{
+    width:40px;
+    height:40px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.04);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    cursor:pointer;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
+}
+
+.seat:hover{
+    transform: translateY(-1px);
+    background: rgba(255,255,255,.10);
+}
+
+.seat-check:checked + .seat{
+    background:#e11d48;
+    border-color:#e11d48;
+    color:#fff;
+}
+
+.seat-occupied{
+    opacity:.35;
+    cursor:not-allowed;
+}
+
+.seat-check:disabled + .seat{
+    opacity:.35;
+    cursor:not-allowed;
+}
+
+.seat-check:disabled + .seat:not(.seat-occupied){
+    opacity:.25;
+}
+
+.badge-soft{
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    color: rgba(255,255,255,.85);
+}
+.seat-locked{
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.10);
+}
+/*.poster-wrapper {*/
+/*    min-height: 420px;*/
+/*    background: rgba(255,255,255,0.06);*/
+/*    border-radius: 12px 12px 0 0;*/
+/*    overflow: hidden;*/
+/*}*/
+/* la fel ca pe Home: poza încadrată frumos în card */
+
+
+
+.poster-box{
+    position: relative;
+}
+
+.poster-box::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+    pointer-events:none;
+}
+
+/* ===== Movies posters (same feel as Home) ===== */
+
+.card {
+    overflow: hidden; /* ca să se taie corect colțurile */
+}
+
+.poster-box{
+    height: 280px;            /* ajustează: 260 / 280 / 300 */
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+    background: rgba(255,255,255,0.06);
+    position: relative;
+}
+
+.poster-img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* gradient overlay (opțional, arată bine) */
+.poster-box::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, .55) 100%);
+    pointer-events: none;
+}
+
+.review-username {
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 600;
+}
+
+.review-date {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.85rem;
+}
+
+
+
+
+
+
+
+
 
 

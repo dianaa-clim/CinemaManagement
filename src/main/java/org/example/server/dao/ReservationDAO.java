@@ -34,72 +34,71 @@ public class ReservationDAO {
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-            stmt.setInt(1, reservation.getIdClient());
+            stmt.setInt(1, reservation.getIdClient()); // aici trebuie să fie ACCOUNT ID (vezi fix la controller)
             stmt.setInt(2, reservation.getIdFilm());
             stmt.setInt(3, reservation.getIdCinemaRoom());
             stmt.setInt(4, reservation.getIdSeat());
-            stmt.setDate(5, Date.valueOf(reservation.getDateReservation()));
+            stmt.setDate(5, reservation.getDateReservation() != null
+                    ? Date.valueOf(reservation.getDateReservation())
+                    : null);
             stmt.setFloat(6, reservation.getPriceReservation());
             stmt.setInt(7, reservation.getIdMovieSchedule());
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("DB error in ReservationDAO.save()", e);
         }
     }
 
     /* ===================== READ ===================== */
 
-    public List<Reservation> findActiveByAccount(int accountId) {
+    public List<Reservation> findActiveByClient(int clientId) {
 
         List<Reservation> list = new ArrayList<>();
 
         String sql = """
-            SELECT *
-            FROM reservation
-            WHERE id_account = ? AND status = 'ACTIVE'
-            ORDER BY date_reservation DESC
-        """;
+        SELECT *
+        FROM reservation
+        WHERE id_account = ? AND status = 'ACTIVE'
+        ORDER BY date_reservation DESC
+    """;
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, clientId);
 
-            stmt.setInt(1, accountId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                list.add(mapReservation(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) list.add(mapReservation(rs));
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("DB error in findActiveByClient(clientId=" + clientId + ")", e);
         }
 
         return list;
     }
 
-    public List<Reservation> findCanceledByAccount(int accountId) {
+
+    public List<Reservation> findCanceledByClient(int clientId) {
 
         List<Reservation> list = new ArrayList<>();
 
         String sql = """
-            SELECT *
-            FROM reservation
-            WHERE id_account = ? AND status = 'CANCELED'
-            ORDER BY date_reservation DESC
-        """;
+        SELECT *
+        FROM reservation
+        WHERE id_account = ? AND status = 'CANCELED'
+        ORDER BY date_reservation DESC
+    """;
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, clientId);
 
-            stmt.setInt(1, accountId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                list.add(mapReservation(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) list.add(mapReservation(rs));
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("DB error in findCanceledByClient(clientId=" + clientId + ")", e);
         }
 
         return list;
@@ -116,10 +115,8 @@ public class ReservationDAO {
             return rs.getInt(1);
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("DB error in countAll()", e);
         }
-
-        return 0;
     }
 
     /* ===================== UPDATE ===================== */
@@ -139,7 +136,9 @@ public class ReservationDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(
+                    "DB error in cancel(reservationId=" + reservationId + ", accountId=" + accountId + ")", e
+            );
         }
     }
 
@@ -160,4 +159,79 @@ public class ReservationDAO {
                 rs.getInt("id_movie_schedule")
         );
     }
+
+    /* ===================== EXTRA ===================== */
+
+    public List<Integer> findOccupiedSeatIdsByMovieSchedule(int movieScheduleId) {
+
+        List<Integer> seats = new ArrayList<>();
+
+        String sql = """
+            SELECT id_seat
+            FROM reservation
+            WHERE id_movie_schedule = ?
+              AND status = 'ACTIVE'
+        """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, movieScheduleId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    seats.add(rs.getInt("id_seat"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "DB error in findOccupiedSeatIdsByMovieSchedule(movieScheduleId=" + movieScheduleId + ")", e
+            );
+        }
+
+        return seats;
+    }
+
+    public Integer findClientIdByAccountId(int accountId) {
+
+        String sql = "SELECT id_client FROM client WHERE id_account = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, accountId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt("id_client");
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("DB error in findClientIdByAccountId(accountId=" + accountId + ")", e);
+        }
+    }
+
+    public Integer findMovieScheduleIdForShow(int filmId, java.time.LocalDate date, java.time.LocalTime time) {
+
+        String sql = """
+        SELECT id_movie_schedule
+        FROM movie_schedule
+        WHERE id_film = ?
+          AND DATE(start_time) = ?
+          AND TIME(start_time) = ?
+        LIMIT 1
+    """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, filmId);
+            stmt.setDate(2, java.sql.Date.valueOf(date));
+            stmt.setTime(3, java.sql.Time.valueOf(time));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt("id_movie_schedule");
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("DB error in findMovieScheduleIdForShow()", e);
+        }
+    }
+
+
+
+
 }

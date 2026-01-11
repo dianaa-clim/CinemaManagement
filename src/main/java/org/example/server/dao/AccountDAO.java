@@ -48,22 +48,57 @@ public class AccountDAO {
 
     /* ================= REGISTER ================= */
 
-    public void insertClient(String username, String password) {
+//    public void insertClient(String username, String password) {
+//
+//        String sql = """
+//            INSERT INTO account (role, name, username, phone_number, password)
+//            VALUES ('Client', ?, ?, NULL, ?)
+//        """;
+//
+//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            stmt.setString(1, username);
+//            stmt.setString(2, username);
+//            stmt.setString(3, password);
+//            stmt.executeUpdate();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
+public void insertClient(String username, String password) {
 
-        String sql = """
-            INSERT INTO account (role, name, username, phone_number, password)
-            VALUES ('Client', ?, ?, NULL, ?)
-        """;
+    String sqlAccount = """
+        INSERT INTO account (role, name, username, phone_number, password)
+        VALUES ('Client', ?, ?, NULL, ?)
+    """;
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, username);
-            stmt.setString(2, username);
-            stmt.setString(3, password);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    String sqlClient = "INSERT INTO client (id_account) VALUES (?)";
+
+    try (
+            PreparedStatement stmtAcc = connection.prepareStatement(sqlAccount, PreparedStatement.RETURN_GENERATED_KEYS)
+    ) {
+        stmtAcc.setString(1, username);
+        stmtAcc.setString(2, username);
+        stmtAcc.setString(3, password);
+
+        stmtAcc.executeUpdate();
+
+        try (ResultSet keys = stmtAcc.getGeneratedKeys()) {
+            if (!keys.next()) {
+                throw new RuntimeException("Could not get generated id_account after insert.");
+            }
+            int newAccountId = keys.getInt(1);
+
+            try (PreparedStatement stmtClient = connection.prepareStatement(sqlClient)) {
+                stmtClient.setInt(1, newAccountId);
+                stmtClient.executeUpdate();
+            }
         }
+
+    } catch (SQLException e) {
+        throw new RuntimeException("DB error in AccountDAO.insertClient()", e);
     }
+}
+
 
     /* ================= ADMIN ================= */
 
